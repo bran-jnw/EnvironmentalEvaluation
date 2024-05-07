@@ -29,72 +29,106 @@ static class RandomExtensions
 struct WordOption
 {
     public int index;
-    public string word;
+    string swedish, english;
 
-    public WordOption(int index, string word)
+    public WordOption(int index, string swedish, string english)
     {
         this.index = index;
-        this.word = word;
+        this.swedish = swedish;
+        this.english = english;
+    }
+
+    public string GetWord(int languageIndex)
+    {
+        if(languageIndex == 0)
+        {
+            return swedish;
+        }
+        else
+        {
+            return english;
+        }
     }
 }
 
 
 public class EnviromentalAssessment : MonoBehaviour
-{ 
+{
+    [SerializeField] TextMeshProUGUI taskIndexText;
+    [SerializeField] TextMeshProUGUI pressScreenText;
     [SerializeField] TextMeshProUGUI currentWordText;
     [SerializeField] TextMeshProUGUI idInfoText;
-    [SerializeField] GameObject[] objectsToDisbaleWhenDone;
+    [SerializeField] TextMeshProUGUI lowText;
+    [SerializeField] TextMeshProUGUI highText;    
 
     WordOption[] words = new WordOption[] 
-    { 
-        new WordOption(1, "modern"),
-        new WordOption(2, "cluttered"),
-        new WordOption(3, "ugly"),
-        new WordOption(4, "strange"),
-        new WordOption(5, "expensive"),
-        new WordOption(6, "masculine"),
-        new WordOption(7, "stimulating"),
-        new WordOption(8, "enclosed"),
-        new WordOption(9, "functional"),
-        new WordOption(10, "well-maintained"),
-        new WordOption(11, "common"),
-        new WordOption(12, "safe"),
-        new WordOption(13, "elegant"),
-        new WordOption(14, "boring"),
-        new WordOption(15, "fragile"),
-        new WordOption(16, "toned-down"),
-        new WordOption(17, "timeless"),
-        new WordOption(18, "open"),
-        new WordOption(19, "idyllic"),
-        new WordOption(20, "surprising"),
-        new WordOption(21, "simple"),
-        new WordOption(22, "historic"),
-        new WordOption(23, "consistent"),
-        new WordOption(24, "lively"),
-        new WordOption(25, "good"),
-        new WordOption(26, "demarcated"),
-        new WordOption(27, "strong"),
-        new WordOption(28, "new"),
-        new WordOption(29, "lavish"),
-        new WordOption(30, "cohesive"),
-        new WordOption(31, "pleasant"),
-        new WordOption(32, "feminine"),
-        new WordOption(33, "complete"),
-        new WordOption(34, "brutal"),
-        new WordOption(35, "unusual"),
-        new WordOption(36, "airy"),
+    {
+        new WordOption(1, "modern", "modern"),
+        new WordOption(2, "brokig", "cluttered"),
+        new WordOption(3, "ful", "ugly"),
+        new WordOption(4, "egendomlig", "strange"),
+        new WordOption(5, "dyrbar", "expensive"),
+        new WordOption(6, "maskulin", "masculine"),
+        new WordOption(7, "stimulerande", "stimulating"),
+        new WordOption(8, "sluten", "enclosed"),
+        new WordOption(9, "funktionell", "functional"),
+        new WordOption(10, "välvårdad", "well-maintained"),
+        new WordOption(11, "vanlig", "common"),
+        new WordOption(12, "trygg", "safe"),
+        new WordOption(13, "stilren", "elegant"),
+        new WordOption(14, "tråkig", "boring"),
+        new WordOption(15, "ömtålig", "fragile"),
+        new WordOption(16, "dämpad", "toned-down"),
+        new WordOption(17, "tidlös", "timeless"),
+        new WordOption(18, "öppen", "open"),
+        new WordOption(19, "idyllisk", "idyllic"),
+        new WordOption(20, "överraskande", "surprising"),
+        new WordOption(21, "enkel", "simple"),
+        new WordOption(22, "ålderdomlig", "historic"),
+        new WordOption(23, "konsekvent", "consistent"),
+        new WordOption(24, "livlig", "lively"),
+        new WordOption(25, "bra", "good"),
+        new WordOption(26, "avgränsad", "demarcated"),
+        new WordOption(27, "kraftfull", "strong"),
+        new WordOption(28, "ny", "new"),
+        new WordOption(29, "påkostad", "lavish"),
+        new WordOption(30, "sammansatt", "cohesive"),
+        new WordOption(31, "trivsam", "pleasant"),
+        new WordOption(32, "feminin", "feminine"),
+        new WordOption(33, "helhetsbetonad", "complete"),
+        new WordOption(34, "brutal", "brutal"),
+        new WordOption(35, "speciell", "unusual"),
+        new WordOption(36, "luftig", "airy")
     };
 
     string file;
     int wordIndex = 0;
     int participantID = 1;
 
-    private void Start()
+    public void SetLanguage(int languageIndex)
+    {
+        if (languageIndex == 0)
+        {
+            lowText.text = "inte\nalls";
+            highText.text = "väldigt";
+            taskIndexText.text = "UPPGIFT 1";
+            pressScreenText.text = "tryck på skärmen för att starta";
+        }
+        else
+        {
+            lowText.text = "not\nat all";
+            highText.text = "very";
+            taskIndexText.text = "TASK 1";
+            pressScreenText.text = "press the screen to start";
+        }
+    }
+
+    public void StartTask()
     {
         System.Random random = new System.Random();
         random.Shuffle(words);
 
-        string participantsCountFile = Path.Combine(UnityEngine.Application.persistentDataPath, "participants.csv");
+        string participantsCountFile = Path.Combine(Application.persistentDataPath, "participants.csv");
         if (File.Exists(participantsCountFile))
         {
             string[] lines = File.ReadAllLines(participantsCountFile);
@@ -129,29 +163,15 @@ public class EnviromentalAssessment : MonoBehaviour
         string userID = participantID.ToString();
         idInfoText.text = "Participant ID: " + userID; 
 
-        file = Path.Combine(UnityEngine.Application.persistentDataPath, userID + ".csv");
+        file = Path.Combine(Application.persistentDataPath, userID + ".csv");
         File.Create(file).Dispose();
         using (StreamWriter sw = File.AppendText(file))
         {
             sw.WriteLine(DateTime.Now.ToString());
         }
 
-        currentWordText.text = words[wordIndex].word;
-    }
-
-    public void Reset()
-    {
-        if(wordIndex > 35)
-        {
-            wordIndex = 0;
-            participantID = 1;
-
-            for (int i = 0; i < objectsToDisbaleWhenDone.Length; i++)
-            {
-                objectsToDisbaleWhenDone[i].SetActive(true);
-            }
-            Start();
-        }        
+        currentWordText.text = words[wordIndex].GetWord(ExperimentalManager.GetLanguageIndex());
+        
     }
 
     public void ClickOn1()
@@ -198,7 +218,7 @@ public class EnviromentalAssessment : MonoBehaviour
 
         EventSystem.current.SetSelectedGameObject(null);
 
-        string newLine = words[wordIndex].index.ToString() + "," + words[wordIndex].word + "," + choice.ToString();
+        string newLine = words[wordIndex].index.ToString() + "," + words[wordIndex].GetWord(ExperimentalManager.GetLanguageIndex()) + "," + choice.ToString();
         using (StreamWriter sw = File.AppendText(file))
         {
             sw.WriteLine(newLine);
@@ -207,16 +227,24 @@ public class EnviromentalAssessment : MonoBehaviour
         ++wordIndex;
         if(wordIndex > 35)
         {
-            /*currentWordText.text = "Thank you.";
-            for (int i = 0; i < objectsToDisbaleWhenDone.Length; i++)
+            using (StreamWriter sw = File.AppendText(file))
             {
-                objectsToDisbaleWhenDone[i].SetActive(false);
-            }*/
-            QuestionManager.EnvironmentDone();
+                sw.WriteLine("###");
+                sw.WriteLine("Item index,Observed object,estimated distance");
+            }
+            ExperimentalManager.EnvironmentDone();
         }
         else
         {
-            currentWordText.text = words[wordIndex].word;
+            currentWordText.text = words[wordIndex].GetWord(ExperimentalManager.GetLanguageIndex()); ;
+        }
+    }
+
+    public void AddDistanceText(string objectNameAndDistance)
+    {
+        using (StreamWriter sw = File.AppendText(file))
+        {
+            sw.WriteLine(objectNameAndDistance);
         }
     }
 }

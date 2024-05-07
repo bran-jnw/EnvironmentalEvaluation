@@ -3,27 +3,50 @@ using TMPro;
 
 public class QueryDistance : MonoBehaviour
 {
-    public TMP_Text textItem;
-    public TMP_Text currentValue;
+    [SerializeField] TextMeshProUGUI taskIndexText;
+    [SerializeField] TextMeshProUGUI pressScreenText;
+    [SerializeField] TextMeshProUGUI distanceToText;
+    [SerializeField] TMP_Text objectText;    
+    [SerializeField]TMP_Text distanceValueText;
+    [SerializeField] TMP_Text metersText;
 
     public int index;
 
+    string[] itemsTextSwe = { "brandsläckaren", "traffikkonen", "slutet av korridoren" };
     //These are kept as public for now...
-    public string[] itemTextE = { "End of corridor",
-                                "Traffic cone",
-                                "Fire extinguisher"};
+    string[] itemsTextEng = { "fire extinguisher", "traffic cone", "fire extinguisher"};
+    string[] itemsText;
+    
 
     public string[] itemValue;
     public int[] order;
 
-    void Start()
+    public void SetLanguage(int languageIndex)
     {
-        //canvas.SetActive(false);
+        if (languageIndex == 0)
+        {
+            taskIndexText.text = "UPPGIFT 2";
+            pressScreenText.text = "tryck på skärmen för att starta";
+            distanceToText.text = "Uppskatta avståndet till";
+            metersText.text = "meter";
+            itemsText = itemsTextSwe;
+        }
+        else
+        {
+            taskIndexText.text = "TASK 2";
+            pressScreenText.text = "press the screen to start";
+            distanceToText.text = "Estimate the distance to the";
+            metersText.text = "meters";
+            itemsText = itemsTextEng;
+        }
+    }
 
-        itemValue = new string[itemTextE.Length];
+    public void StartTask()
+    {
+        itemValue = new string[itemsText.Length];
 
-        order = new int[itemTextE.Length];
-        for (int i = 0; i < itemTextE.Length; i++)
+        order = new int[itemsText.Length];
+        for (int i = 0; i < itemsText.Length; i++)
         {
             order[i] = i;
         }            
@@ -31,7 +54,7 @@ public class QueryDistance : MonoBehaviour
 
         index = 0;
 
-        textItem.text = itemTextE[order[index]];
+        objectText.text = itemsText[order[index]];
 
     }
 
@@ -40,7 +63,7 @@ public class QueryDistance : MonoBehaviour
         if (!itemValue[order[index]].EndsWith("."))
         {
             itemValue[order[index]] += "."; // + new value
-            currentValue.text = itemValue[order[index]].ToString();
+            distanceValueText.text = itemValue[order[index]].ToString();
         }
     }
 
@@ -48,38 +71,37 @@ public class QueryDistance : MonoBehaviour
     {
         //itemValue[order[index]] *= 10; // previous value * 10
         itemValue[order[index]] += value; // + new value
-        currentValue.text = itemValue[order[index]].ToString();
+        distanceValueText.text = itemValue[order[index]].ToString();
     }
 
     public void Click_clear()
     {
         itemValue[order[index]] = "";
-        currentValue.text = itemValue[order[index]].ToString();
+        distanceValueText.text = itemValue[order[index]].ToString();
     }
     public void Click_OK()
     {
         index++;
-        if (index < itemTextE.Length)
+        if (index < itemsText.Length)
         {
-            currentValue.text = "";
-            textItem.text = itemTextE[order[index]];
+            distanceValueText.text = "";
+            objectText.text = itemsText[order[index]];
         }
         else
         {
             SaveData();
-            //canvas.SetActive(false);
             index = 0;
-            currentValue.text = "";
-            //control.Distance_end();
-            QuestionManager.DistanceDone();
+            distanceValueText.text = "";
+            ExperimentalManager.DistanceDone();
         }
     }
 
     private void SaveData()
     {
-        for (int i = 0; i < itemTextE.Length; i++)
+        for (int i = 0; i < itemsText.Length; i++)
         {
-            //control.WriteAnswerLine(order[i] + ", " + itemTextE[order[i]] + ", " + itemValue[order[i]]);
+            string line = order[i] + "," + itemsText[order[i]] + "," + itemValue[order[i]];
+            gameObject.GetComponent<EnviromentalAssessment>().AddDistanceText(line);
         }
     }
 
