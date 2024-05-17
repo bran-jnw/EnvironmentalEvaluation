@@ -4040,6 +4040,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7f44ff0050679c4c8be06313a26bac6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  doTask1: 1
+  doTask2: 0
+  doTask3: 0
   langaugePrompt: {fileID: 190724065}
   task1Prompt: {fileID: 991430671}
   task2Prompt: {fileID: 1006115295}

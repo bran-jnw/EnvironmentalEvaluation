@@ -14,7 +14,7 @@ public class QueryDistance : MonoBehaviour
 
     string[] itemsTextSwe = { "brandsläckaren", "traffikkonen", "slutet av korridoren" };
     //These are kept as public for now...
-    string[] itemsTextEng = { "fire extinguisher", "traffic cone", "fire extinguisher"};
+    string[] itemsTextEng = { "fire extinguisher", "traffic cone", "end of the corridor"};
     string[] itemsText;
     
 

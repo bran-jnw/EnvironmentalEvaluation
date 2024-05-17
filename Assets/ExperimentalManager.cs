@@ -5,6 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class ExperimentalManager : MonoBehaviour
 {
+    [SerializeField] bool doTask1;
+    [SerializeField] bool doTask2;
+    [SerializeField] bool doTask3;
     [SerializeField] GameObject langaugePrompt;
     [SerializeField] GameObject task1Prompt;
     [SerializeField] GameObject task2Prompt;
@@ -51,34 +54,58 @@ public class ExperimentalManager : MonoBehaviour
 
     public void StartTask1()
     {
-        task1Prompt.SetActive(false);
-        environment.SetActive(true);
-        gameObject.GetComponent<EnviromentalAssessment>().StartTask();
+        if(doTask1)
+        {
+            task1Prompt.SetActive(false);
+            environment.SetActive(true);
+            gameObject.GetComponent<EnviromentalAssessment>().StartTask();
+        }
+        else
+        {
+            StartTask2();
+        }
+        
     }
 
     public void StartTask2() 
     {
-        task2Prompt.SetActive(false);
-        distance.SetActive(true);
-        gameObject.GetComponent<QueryDistance>().StartTask();
+        if(doTask2)
+        {
+            task2Prompt.SetActive(false);
+            distance.SetActive(true);
+            gameObject.GetComponent<QueryDistance>().StartTask();
+        }
+        else
+        {
+            StartTask3();
+        }
     }
     public void StartTask3()
     {
-        task3Prompt.SetActive(false);
-        instance.distraction.SetActive(true);
-        gameObject.GetComponent<QuerySound>().StartTask();
+        if(doTask3)
+        {
+            task3Prompt.SetActive(false);
+            instance.distraction.SetActive(true);
+            gameObject.GetComponent<QuerySound>().StartTask();
+        }        
     }
 
     public static void EnvironmentDone()
     {
         instance.environment.SetActive(false);
-        instance.task2Prompt.SetActive(true);
+        if (instance.doTask2 || instance.doTask3)
+        {
+            instance.task2Prompt.SetActive(true);
+        }
     }
 
     public static void DistanceDone()
     {
         instance.distance.SetActive(false);
-        instance.task3Prompt.SetActive(true);
+        if (instance.doTask3)
+        {
+            instance.task3Prompt.SetActive(true);
+        }        
     }
 
     public static void AllDone()
